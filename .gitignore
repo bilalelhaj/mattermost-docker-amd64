@@ -13,3 +13,4 @@
 .env
 
 compose.yaml
+/backups/
