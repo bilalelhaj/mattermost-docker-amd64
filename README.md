@@ -1,44 +1,30 @@
-# Mattermost Docker ARM
+# Mattermost Docker AMD64
 
-A minimal Docker Compose setup to run [Mattermost](https://mattermost.com/) on ARM architecture.
+Docker Compose setup for Mattermost Team Edition 12.1.0 on 64-bit Intel and AMD systems (`linux/amd64`). Based on [jonaaix/mattermost-docker-arm](https://github.com/jonaaix/mattermost-docker-arm).
 
 ## Getting Started
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/jonaaix/mattermost-docker-arm.git
-   cd mattermost-docker-arm
-   ```
-
-2. Copy the example files:
+1. Copy the example files.
    ```bash
    cp .env.example .env
    cp compose.example.yaml compose.yaml
    ```
 
-3. Configure your environment:
-   Edit the `.env` file to set values such as the database password and site URL.
+2. Set the database password, pgAdmin credentials, and Mattermost domain in `.env`. Point the domain at a Caddy Docker Proxy connected to the external `main-proxy` network.
 
-4. Start the services:
+3. Build and start the services.
    ```bash
-   docker compose build
-   docker compose up -d
+   docker compose up -d --build
    ```
 
-5. Open Mattermost in your browser:
-   [http://localhost:8065](http://localhost:8065)
+4. Open `https://<MM_DOMAIN>` in your browser.
 
 ## Update
-To update, edit the Dockerfile and upgrade the Mattermost version in:
-```Dockerfile
-ARG MM_PACKAGE="https://releases.mattermost.com/11.2.1/mattermost-team-11.2.1-linux-arm64.tar.gz"
-```
-**Note: Downgrade is not supported!**
+Set `MM_PACKAGE` in the Dockerfile to the desired Linux AMD64 Team Edition download from the [Mattermost version archive](https://docs.mattermost.com/product-overview/version-archive). Review the [Mattermost upgrade notes](https://docs.mattermost.com/administration-guide/upgrade/important-upgrade-notes) before updating an existing deployment.
 
-Then rebuild and restart the containers:
+Rebuild and restart the containers.
 ```bash
-docker compose build
-docker compose up -d
+docker compose up -d --build
 ```
 
 ## Backup Configuration
@@ -47,7 +33,7 @@ Then add a cron job to your host system:
 ```bash
 crontab -e
 
-30 3 * * * /var/www/mattermost-docker-arm/backup-s3.sh >> /var/www/mattermost-docker-arm/mm_backup.log 2>&1
+30 3 * * * /var/www/mattermost-docker-amd64/backup-s3.sh >> /var/www/mattermost-docker-amd64/mm_backup.log 2>&1
 ```
 
 ---

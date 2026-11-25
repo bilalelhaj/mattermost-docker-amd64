@@ -5,7 +5,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Build args for user and package version
 ARG PUID=2000
 ARG PGID=2000
-ARG MM_PACKAGE="https://releases.mattermost.com/11.9.0/mattermost-team-11.9.0-linux-arm64.tar.gz"
+ARG MM_PACKAGE="https://releases.mattermost.com/12.1.0/mattermost-team-12.1.0-linux-amd64.tar.gz"
 
 # Environment
 ENV PATH="/mattermost/bin:${PATH}" \
@@ -31,7 +31,7 @@ RUN mkdir -p /mattermost /mattermost/data /mattermost/plugins /mattermost/client
   && useradd -u "${PUID}" -g "${PGID}" -d /mattermost -s /usr/sbin/nologin mattermost
 
 # Download and extract Mattermost
-RUN curl -L "$MM_PACKAGE" | tar -xvz -C /mattermost --strip-components=1 \
+RUN curl -fL "$MM_PACKAGE" | tar -xvz -C /mattermost --strip-components=1 \
   && chown -R mattermost:mattermost /mattermost
 
 USER mattermost
