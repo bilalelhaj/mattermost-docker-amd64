@@ -1,9 +1,7 @@
 services:
    mm:
+      image: mattermost/mattermost-team-edition:12.1.0
       platform: linux/amd64
-      build:
-         context: .
-         dockerfile: Dockerfile
       container_name: mattermost_app
       environment:
          DB_HOST: db

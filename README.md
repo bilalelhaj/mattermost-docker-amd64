@@ -12,19 +12,20 @@ Docker Compose setup for Mattermost Team Edition 12.1.0 on 64-bit Intel and AMD 
 
 2. Set the database password, pgAdmin credentials, and Mattermost domain in `.env`. Point the domain at a Caddy Docker Proxy connected to the external `main-proxy` network.
 
-3. Build and start the services.
+3. Start the services.
    ```bash
-   docker compose up -d --build
+   docker compose up -d
    ```
 
 4. Open `https://<MM_DOMAIN>` in your browser.
 
 ## Update
-Set `MM_PACKAGE` in the Dockerfile to the desired Linux AMD64 Team Edition download from the [Mattermost version archive](https://docs.mattermost.com/product-overview/version-archive). Review the [Mattermost upgrade notes](https://docs.mattermost.com/administration-guide/upgrade/important-upgrade-notes) before updating an existing deployment.
+Set the `mattermost/mattermost-team-edition` image tag in `compose.yaml` to the desired version from [Docker Hub](https://hub.docker.com/r/mattermost/mattermost-team-edition/tags). Review the [Mattermost upgrade notes](https://docs.mattermost.com/administration-guide/upgrade/important-upgrade-notes) before updating an existing deployment.
 
-Rebuild and restart the containers.
+Pull the updated image and restart Mattermost.
 ```bash
-docker compose up -d --build
+docker compose pull mm
+docker compose up -d mm
 ```
 
 ## Backup Configuration
