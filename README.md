@@ -30,6 +30,7 @@ docker compose up -d mm
 
 ## Backup Configuration
 To enable backups to S3-compatible storage, configure the variables in your `.env` file.
+Each run stores `db.sql` and `data.tar.gz` under `<project>/YYYY-MM-DD_HHMMSS/`. Remote backups are kept for 10 days by default.
 Then add a cron job to your host system:
 ```bash
 crontab -e

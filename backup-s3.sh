@@ -10,7 +10,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_NAME="$(basename "${SCRIPT_DIR}")"
 BACKUP_DIR="${SCRIPT_DIR}/backups"
-TIMESTAMP="$(date +"%Y%m%d_%H%M%S")"
+TIMESTAMP="$(date +"%F_%H%M%S")"
 COMPOSE_FILE="${SCRIPT_DIR}/compose.yaml"
 
 if [ -f "${SCRIPT_DIR}/.env" ]; then
@@ -32,6 +32,8 @@ FILE_DATA="data_${PROJECT_NAME}_${TIMESTAMP}.tar.gz"
 
 # Internal name for Rclone remote
 REMOTE="s3store"
+REMOTE_BACKUP_DIR="${REMOTE}:${S3_BUCKET}/${PROJECT_NAME}"
+REMOTE_RUN_DIR="${REMOTE_BACKUP_DIR}/${TIMESTAMP}"
 
 mkdir -p "${BACKUP_DIR}"
 
@@ -74,12 +76,16 @@ docker run --rm \
 
 # 3. S3 Upload
 echo "Uploading to S3..."
-rclone_cmd copy "/data/${FILE_SQL}" "${REMOTE}:${S3_BUCKET}/${PROJECT_NAME}"
-rclone_cmd copy "/data/${FILE_DATA}" "${REMOTE}:${S3_BUCKET}/${PROJECT_NAME}"
+rclone_cmd copyto "/data/${FILE_SQL}" "${REMOTE_RUN_DIR}/db.sql"
+rclone_cmd copyto "/data/${FILE_DATA}" "${REMOTE_RUN_DIR}/data.tar.gz"
 
 if [[ "${1:-}" != --skip-retention ]]; then
     echo "Applying Retention Policy (Delete older than ${S3_RETENTION_DAYS} days)..."
-    rclone_cmd delete "${REMOTE}:${S3_BUCKET}/${PROJECT_NAME}" --min-age "${S3_RETENTION_DAYS}d"
+    rclone_cmd delete "${REMOTE_BACKUP_DIR}" --min-age "${S3_RETENTION_DAYS}d" \
+        --include '/????-??-??_??????/db.sql' \
+        --include '/????-??-??_??????/data.tar.gz' \
+        --include "/db_${PROJECT_NAME}_????????_??????.sql" \
+        --include "/data_${PROJECT_NAME}_????????_??????.tar.gz"
 
     find "${BACKUP_DIR}" -name "db_*.sql" -mtime "+${BACKUP_RETENTION_DAYS}" -delete
     find "${BACKUP_DIR}" -name "data_*.tar.gz" -mtime "+${BACKUP_RETENTION_DAYS}" -delete
